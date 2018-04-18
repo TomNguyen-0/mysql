@@ -1,0 +1,12 @@
+create or replace procedure testt(
+	last_name2 in empbb02.ename%type,
+	avg_number2 out number) as
+begin
+	select infobb02.average
+	into avg_number2
+	from infobb02,empbb02
+	where empbb02.empno=infobb02.empno and last_name2=empbb02.ename;
+end;
+.
+/
+show errors

@@ -1,0 +1,22 @@
+From eckberg@edoras.sdsu.edu Fri Jul 21 08:58:35 2017
+Return-Path: <eckberg@edoras.sdsu.edu>
+X-Original-To: cssc0020
+Delivered-To: cssc0020@edoras.sdsu.edu
+Received: by edoras.sdsu.edu (Postfix, from userid 1015)
+	id 0B64D6000048; Fri, 21 Jul 2017 08:58:35 -0700 (PDT)
+Date: Fri, 21 Jul 2017 08:58:35 -0700
+To: eckberg@edoras.sdsu.edu
+Subject: Test2
+User-Agent: Heirloom mailx 12.5 7/5/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-Id: <20170721155835.0B64D6000048@edoras.sdsu.edu>
+From: eckberg@edoras.sdsu.edu
+
+-- simple test of the 'execute' command, which basically creates a 
+-- minimal anonymous block containing the following invocation
+VARIABLE deptname VARCHAR2(8)
+execute :deptname := getDnamebb02('lasorda');
+PRINT deptname
+

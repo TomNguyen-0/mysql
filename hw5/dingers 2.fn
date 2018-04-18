@@ -1,0 +1,11 @@
+create or replace function dingers( lastname in stats.last_name%type)
+		return stats.bases.homeruns%type as gdname stats.bases.homeruns%type;
+	begin
+		select stats.bases.homeruns
+		into gdname
+		from stats
+		where stats.last_name = lastname;
+		return (gdname);
+	end;
+	/
+	show errors;

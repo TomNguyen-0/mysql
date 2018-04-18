@@ -1,0 +1,31 @@
+create or replace type body xtrabases as member function dingers return number is
+hruns stats.bases.homeruns%type;
+	begin
+		select stats.bases.homeruns
+		into hruns
+		fromst stats
+		where stats.bases.homeruns = self.homeruns;
+		return hruns;
+	end;
+end;
+/
+show errors
+
+	Code:
+	//create a file dingers.fn
+	//run: sql>start dingers
+	create or replace function dingers( lastname in stats.last_name%type)
+		return number as homeruns number;
+	begin
+		select bases.homeruns
+		into homeruns
+		from stats
+		where stats.last_name = lastname;
+		return (homeruns);
+	end;
+	/
+	show errors;
+	
+	output:
+	Function created.
+	No errors.

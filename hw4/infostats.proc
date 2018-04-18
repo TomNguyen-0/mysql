@@ -1,0 +1,13 @@
+create or replace procedure infostats(
+	last_name in empbb02.ename%type,
+	avg_number out number,
+	era_number out number) as
+begin
+	select infobb02.average, infobb02.era
+	into avg_number,era_number
+	from infobb02,empbb02
+	where empbb02.empno = infobb02.empno and last_name = 	empbb02.ename;
+end;
+.
+/
+show errors

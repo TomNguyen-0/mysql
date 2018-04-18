@@ -1,0 +1,11 @@
+create or replace type body xtrabases as member function dingers return number is homeruns stats.bases.homeruns%type;
+		begin
+			select st.bases.homeruns
+			into homeruns
+			from stats st
+			where st.bases.homeruns = self.homeruns;
+			return homeruns;
+		end;
+	end;
+	/
+	show errors

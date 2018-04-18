@@ -1,0 +1,192 @@
+Tom Nguyen - cssc0020 - st20 - REDID 820468110
+Professor Dr. Carl Eckberg
+CS 514 - summer s2 - TTh 1800-2150
+July 18, 2017
+
+
+Step 1:
+SQL> alter table empbb02 add constraint empbb02_empno_pk primary key (empno);
+
+Table altered.
+
+SQL> desc empbb02
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMPNO                                     NOT NULL VARCHAR2(5)
+ ENAME                                     NOT NULL VARCHAR2(10)
+ POS                                                VARCHAR2(12)
+ BOSS                                               VARCHAR2(4)
+ HIREDATE                                           DATE
+ SAL                                                NUMBER(6)
+ DEPTNO                                             NUMBER(2)
+ INCENTIVES                                         NUMBER(6)
+SQL> alter table infobb02 add constraint infobb02_empno_pk primary key (empno);
+
+Table altered.
+
+SQL> desc infobb02
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMPNO                                     NOT NULL VARCHAR2(5)
+ FNAME                                              VARCHAR2(10)
+ NICK                                               VARCHAR2(15)
+ UNI                                                VARCHAR2(4)
+ AVERAGE                                            NUMBER(4)
+ ERA                                                NUMBER(6,3)
+SQL> alter table deptbb02 add constraint deptbb02_deptno_pk primary key(deptno);
+
+Table altered.
+
+SQL> desc deptbb02
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ DEPTNO                                    NOT NULL NUMBER(3)
+ DNAME                                              VARCHAR2(8)
+ RESTAURANT                                         VARCHAR2(15)
+ LOCATION                                           VARCHAR2(15)
+ MOTTO                                              VARCHAR2(30)
+------------------------------------------------------------
+
+Step 2:
+SQL> select ename as "Last Name", to_char(hiredate,'yyyy-mm-dd+hh24:mi:ss') as "Intl Date" from empbb02;
+
+Last Name  Intl Date
+---------- -------------------
+rickey     1998-01-01+00:00:00
+lasorda    1998-01-10+00:00:00
+bochy      1998-01-11+00:00:00
+berra      1998-01-12+00:00:00
+musial     1998-02-01+00:00:00
+gehrig     1998-03-11+00:00:00
+minoso     1998-05-05+00:00:00
+sandberg   1998-02-28+00:00:00
+cey        1999-01-10+00:00:00
+williams   1999-01-05+00:00:00
+johnson    1998-11-08+00:00:00
+brown      1999-10-18+00:00:00
+mays       1998-01-01+00:00:00
+mungo      2000-03-10+00:00:00
+rodriguez  2001-10-16+00:00:00
+--------------------------------------------------------------
+
+Step 3:
+SQL> alter table salsbb02 add constraint salsbb02_grade_role_pk primary key(grade,role);
+
+Table altered.
+
+SQL> desc salsbb02
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ GRADE                                     NOT NULL NUMBER(2)
+ ROLE                                      NOT NULL VARCHAR2(8)
+ LOSAL                                              NUMBER(6)
+ HISAL                                              NUMBER(6)
+--------------------------------------------------------------
+
+Step 4:
+SQL> alter table infobb02 add constraint infobb02_uni_uk unique(uni);
+
+Table altered.
+
+--------------------------------------------------------------
+
+Step 5:
+SQL> column motto format a24;
+SQL> select * from deptbb02;
+
+    DEPTNO DNAME    RESTAURANT      LOCATION        MOTTO
+---------- -------- --------------- --------------- ------------------------
+        10 infield  Jade            Clairmont       Let's play two!
+        20 outfield House of Pasta  Santee          Alea iacta est
+        30 pitcher  Crab Shack      Pacific Beach   Semper paratus
+        40 staff    Burger King     Lakeside        Experientia docet
+        50 catchers Pinnacle Peak   Santee          Non bastardi carborundum
+--------------------------------------------------------------
+
+Step 6:
+SQL> alter table infobb02 add constraint infobb02_empno_fk foreign key(empno) references empbb02(empno);
+
+Table altered.
+
+SQL> alter table empbb02 add constraint empbb02_deptno_fk foreign key(deptno) references deptbb02(deptno);
+
+Table altered.
+
+--------------------------------------------------------------
+
+Step 7:
+SQL> alter table empbb02 add constraint empbb02_ename_ck CHECK(ENAME NOT LIKE 'q%|Q%');
+
+Table altered.
+--------------------------------------------------------------
+
+Step 8:
+SQL> alter table empbb02 modify ename varchar2(16);
+
+Table altered.
+
+SQL> insert into empbb02 values('745','Quisenberry','fake','735','01-JAN-2016',2000,50,null);
+insert into empbb02 values('745','Quisenberry','fake','735','01-JAN-2016',2000,50,null)
+*
+ERROR at line 1:
+ORA-02290: check constraint (ST20.EMPBB02_ENAME_CK) violated
+--------------------------------------------------------------
+
+Step 9:
+SQL> drop table empbb02;
+drop table empbb02
+           *
+ERROR at line 1:
+ORA-02449: unique/primary keys in table referenced by foreign keys
+--------------------------------------------------------------
+
+Step 10:
+SQL> alter table empbb02 modify ename varchar2(13);
+
+Table altered.
+
+SQL> insert into empbb02 values ('700','paige','pitcher','798','09-JUL-1948',9000,30,null);
+
+1 row created.
+
+SQL> insert into infobb02 values('700','Leroy','Satchel','29',null,3.29);
+
+1 row created.
+
+--------------------------------------------------------------
+
+
+Step 11:
+SQL> alter table infobb02 add hofdate date;
+
+Table altered.
+
+SQL> update infobb02 set hofdate='09-FEB-1971' where empno='700';
+
+1 row updated....etc...
+
+SQL> select * from infobb02;
+
+EMPNO FNAME      NICK            UNI     AVERAGE        ERA HOFDATE
+----- ---------- --------------- ---- ---------- ---------- ---------
+712   branch                     56                         01-JAN-67
+735   tommy                      62                         01-JAN-97
+707   bruce                      64          220
+777   orestes    minnie          27          270         32
+763   lou        iron horse      14          350            01-JAN-39
+782   stan       the man         19          342            01-JAN-69
+798   larry      yogi            66          290            01-JAN-72
+788   ron        penguin         35          287
+730   willie     say hey kid     24          325            01-JAN-79
+755   randy      the big unit    8           123       2.15 01-JAN-15
+744   mordecai   3 fingers       25          168       3.27 01-JAN-49
+721   ryne       rhino           17          294            01-JAN-05
+799   van lingle                 31          220       2.82
+720   ted        teddy ballgame  10          350            01-JAN-66
+766   ivan       pudge           4           339            01-JAN-17
+700   Leroy      Satchel         29                    3.29 09-FEB-71
+
+16 rows selected.
+
+---------------------------------------------------------------
+

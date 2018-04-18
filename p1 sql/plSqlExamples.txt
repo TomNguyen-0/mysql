@@ -1,0 +1,201 @@
+From eckberg@edoras.sdsu.edu Thu Jul 20 22:07:31 2017
+Return-Path: <eckberg@edoras.sdsu.edu>
+X-Original-To: cssc0020
+Delivered-To: cssc0020@edoras.sdsu.edu
+Received: by edoras.sdsu.edu (Postfix, from userid 1015)
+	id B6B616000048; Thu, 20 Jul 2017 22:07:31 -0700 (PDT)
+Date: Thu, 20 Jul 2017 22:07:31 -0700
+To: eckberg@edoras.sdsu.edu
+Subject: pl/sql examples
+User-Agent: Heirloom mailx 12.5 7/5/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-Id: <20170721050731.B6B616000048@edoras.sdsu.edu>
+From: eckberg@edoras.sdsu.edu
+
+
+spool plsql.dat
+set echo on
+--% can use VARIABLE or VAR
+--% this is a variation of plsql3.sql with more programming care
+VARIABLE mo_sal VARCHAR2(10);
+DECLARE 
+  v_sal NUMBER(9,2):= &ann_sal;
+BEGIN
+  :mo_sal:=TO_CHAR(v_sal/12,'99999.99');
+END;
+/
+PRINT mo_sal
+
+
+
+
+-- plsql2.sql
+set serveroutput on
+
+DECLARE 
+  g_monthly_sal NUMBER;
+  v_sal NUMBER(9,2) NOT NULL:= &p_annual_sal;
+  c_val CONSTANT NUMBER:= -10;
+BEGIN
+  g_monthly_sal := v_sal/12;
+  DBMS_OUTPUT.PUT_LINE('The monthly salary is $'||
+        TO_CHAR(g_monthly_sal)|| ' and your value to us is '
+        ||c_val||'.');
+END;
+
+
+
+
+spool plsql3.dat
+set echo on
+% also see plsql.sql, which does a better job;  try 4 for annual salary
+% with each to see the problem 
+VARIABLE mo_sal VARCHAR2(10);
+DECLARE 
+  v_sal NUMBER(9,2):= &ann_sal;
+BEGIN
+  :mo_sal:=TO_CHAR(v_sal/12);
+END;
+/
+PRINT mo_sal
+
+
+
+--plsql4.sql
+set pause on
+set echo on
+set pages 100
+set serveroutput on
+DECLARE
+  empname empbb02.ename%TYPE;
+  empmgr  empbb02.boss%TYPE;
+  empsal  empbb02.sal%TYPE;
+BEGIN
+  SELECT emp.ename,emp.boss,emp.sal
+  INTO empname,empmgr,empsal
+  FROM empbb02 emp
+  WHERE emp.empno = 735 ;
+  DBMS_OUTPUT.PUT_LINE('employee 735 is '||empname||', works for '||empmgr||
+    ' and makes '||empsal);
+END;
+
+
+
+
+
+spool plsql5.dat
+set echo on
+set pause on
+set pages 100
+set serveroutput on
+DECLARE
+  b1 BOOLEAN := FALSE;
+  b2 BOOLEAN;
+  b3 BOOLEAN := TRUE;
+BEGIN
+  --b2 := b3 AND b2;
+  IF (b2 = TRUE) THEN
+    DBMS_OUTPUT.PUT_LINE('b2 is TRUE');
+  ELSIF (b2 = FALSE) THEN
+    DBMS_OUTPUT.PUT_LINE('b2 is FALSE');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('b2 is NULL');
+  END IF;
+  b3 := b3 AND 3 < 2;
+  IF (b3 = TRUE) THEN
+    DBMS_OUTPUT.PUT_LINE('b3 is TRUE');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('b3 is FALSE');
+  END IF;
+END;
+
+
+
+
+
+
+--plsql6.sql
+--this illustrates the use of %ROWTYPE for working with a 
+--single row; since INTO is required, this is a minimal way 
+--to achieve the goal; compare this with plsql4.sql
+-- implicit record example
+spool plsql6.dat
+set pause on
+set echo on
+set pages 100
+set serveroutput on
+DECLARE
+  my_emp empbb02%ROWTYPE;
+BEGIN
+  SELECT *
+  INTO my_emp
+  FROM empbb02
+  WHERE empbb02.empno = '735';
+  DBMS_OUTPUT.PUT_LINE('employee 735 is '||my_emp.ename||', works for '
+    ||my_emp.boss||' and makes '||my_emp.sal);
+END;
+.
+/
+set echo off
+spool off    
+
+
+-- plsql7.sql
+-- shows that group functions are ok INSIDE a  SELECT
+VARIABLE b_sal NUMBER         
+BEGIN
+  SELECT SUM(empbb02.sal)
+  INTO :b_sal
+  FROM empbb02;
+END;
+.
+/
+PRINT b_sal
+
+--plsql8.sql
+SET SERVEROUTPUT ON
+set pages 100
+DECLARE
+ l_x NUMBER := 2;
+ out VARCHAR2(6);
+BEGIN
+CASE WHEN l_x = 1 THEN out := 'one';
+     WHEN l_x = 2 THEN out :='two';
+     WHEN l_x = 3 THEN out := 'three';
+     ELSE out := 'big';
+END CASE;
+DBMS_OUTPUT.PUT_LINE (out);
+end;
+.
+/
+
+
+--record.sql
+-- plsql6.sql contains a "table-based" record.  This is 'implicit' and
+-- the RECORD keyword is not used, but %ROWTYPE is used.
+-- this is an example of a "programmer-defined" record, and the keywords
+-- TYPE and RECORD both come into play; the code also shows that a table
+-- of explicit records can be created
+SET SERVEROUTPUT ON
+DECLARE
+  TYPE rectype IS RECORD
+     (recname empbb02.ename%TYPE,
+      recsal  empbb02.sal%TYPE);
+  second_guesser rectype;
+  TYPE tab_of_guessers IS TABLE OF rectype INDEX BY BINARY_INTEGER;
+  noisy_fans tab_of_guessers;
+BEGIN
+  second_guesser.recname := 'Joe';
+  second_guesser.recsal := 2;
+  noisy_fans(1) := second_guesser;
+  noisy_fans(2).recname := 'Moe';
+  noisy_fans(2).recsal := 5;
+  noisy_fans(-1).recname := 'Sue';
+  DBMS_OUTPUT.PUT_LINE ('Hindsight '||noisy_fans(2).recname||
+         ' is the official second guesser for the team.');
+END;
+.
+/
+

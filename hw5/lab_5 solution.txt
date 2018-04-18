@@ -1,0 +1,150 @@
+Tom Nguyen - cssc0020 - st20 - REDID 820468110
+Professor Dr. Carl Eckberg
+CS 514 - summer s2 - TTh 1800-2150
+Aug 07, 2017
+
+                       Lab 5   CS514    Summer 2017
+
+
+    1. Your immediate supervisor, who has an MBA and must be obeyed, imposes the participation constraint that every new employee participate in orientation. Add a table called newhires, with fields empno, ename, hiredate. Write a trigger so that if you add an employee, he/she will be placed in the newhires table.  Presumably, after attending orientation, the new hire can be deleted from the hewhires table.
+	
+	code:
+	create table newhires (empno varchar2(10),ename varchar2(10),hiredate date);
+	
+	//create a file after_orientation.sql
+	//run: sql>start after_orientation
+	SET SERVEROUTPUT ON
+	create or replace trigger after_orientation
+		after insert on empno on empbb02
+		for each row
+	begin
+		insert into newhires values(:new.empno,:new.ename,:new.hiredate);
+	end;
+	/
+	show errors
+	
+	output:
+	Table created.
+	Trigger created.
+	No errors.
+	
+	Test:
+	insert into empbb02 values('999','yyyy','zzzz','888','10-dec-9999',9999,30,null);
+	select * from newhires;
+	delete from empbb02 where empno=999;
+	delete from newhires where empno=999;
+	
+	output:
+	1 row created.
+	SQL> select * from newhires;
+
+	EMPNO      ENAME      HIREDATE
+	---------- ---------- ---------
+	999        yyyy       10-DEC-99
+	1 row deleted.
+	1 row deleted.
+     
+    2. A 'trace' of rain for a month is define as .04 or fewer inches. Write SQL to determine the number of years since 1850 that August has had more than a trace of rain in San Diego.
+	
+	code:
+	select count(year) as "YEARS in AUG greater than 0.04" from rainfall where (aug>0.04);
+	
+	
+	
+	
+	output:
+	YEARS in AUG greater than 0.04
+	------------------------------
+								33
+
+    3. This one is about user defined types. Make a type named xtrabases which will enable one to fine 3 things: the number of doubles a retired player hit in his career, and the number of triples, and the number of home runs. Also make a variable sized array to hold the teams a player has played for, e.g. St Louis Browns and Washington Senators Create a table called stats with 4 fields: first name, last name, xtrabases, and your array Insert 5 rows, with accurate data for players in the baseball hall of fame.   Choose your players 'at random'.  No two students should come close to having the same set of players. Since home runs are the glamour statistic, write a memberi function called dingers to output the number of career home runs. You should of course 'test' the things you create.
+	
+	code:
+	//create a file xtrabases.sql
+	//run: sql>start xtrabases
+	create or replace type xtrabases as object (doubles number, triples number, homeruns number,member function dingers return number);
+	/
+	show errors
+	
+	output:
+	Type created.
+	no errors.
+	
+	code:
+	create type my_array is varray(10) of varchar2(30);
+	/
+	
+	output:
+	Type created.
+	
+	code:
+	create table stats (first_name varchar2(10), last_name varchar2(20),bases xtrabases, your_array my_array);
+	
+	output:
+	Table created.
+	
+	Code:
+	//searched using the link below for years: 1989, 1990, and 1991
+	//http://baseballhall.org/explorer?name=&team=All&induction=270&pos=All&state=All&born%5Bvalue%5D%5Bdate%5D=&bats=All&throws=All
+	INSERT INTO stats VALUES ('Johnny','Bench',XTRABASES(381,24,389),my_array('Cincinnati Reds'));
+	INSERT INTO stats VALUES ('Red','Schoendienst',XTRABASES(427,78,84),my_array('St. Louis Cardinals'));
+	INSERT INTO stats VALUES ('Joe','Morgan',XTRABASES(449,96,268),my_array('Cincinnati Reds'));
+	INSERT INTO stats VALUES ('Rod','Carew',XTRABASES(445,112,92),my_array('Minnesota Twins'));
+	INSERT INTO stats VALUES ('Tony','Lazzeri',XTRABASES(334,115,178),my_array('New York Yankees'));
+	column your_array format a21
+	column bases format a34
+	column last_name format a12
+	column first_name format a6
+	set pages 333
+	select * from stats;
+	
+	output:
+	1 row created. (5 times)
+	
+	FIRST_ LAST_NAME    BASES(DOUBLES, TRIPLES, HOMERUNS)  YOUR_ARRAY
+	------ ------------ ---------------------------------- ---------------------
+	Johnny Bench        XTRABASES(381, 24, 389)            MY_ARRAY('Cincinnati
+															Reds')
+
+	Red    Schoendienst XTRABASES(427, 78, 84)             MY_ARRAY('St. Louis C
+															ardinals')
+
+	Joe    Morgan       XTRABASES(449, 96, 268)            MY_ARRAY('Cincinnati
+															Reds')
+
+	Rod    Carew        XTRABASES(445, 112, 92)            MY_ARRAY('Minnesota T
+															wins')
+
+	Tony   Lazzeri      XTRABASES(334, 115, 178)           MY_ARRAY('New York Ya
+															nkees')
+	
+	Code:
+	//create a file dingers.body
+	//run: sql>start dingers.body
+	create or replace type body xtrabases as member function dingers return number is homeruns stats.bases.homeruns%type;
+		begin
+			select st.bases.homeruns
+			into homeruns
+			from stats st
+			where st.bases.homeruns = self.homeruns;
+			return homeruns;
+		end;
+	end;
+	/
+	show errors
+	
+	output:
+	Type body created.
+	No errors.
+
+	Test:
+	SELECT st.first_name as "First", st.last_name as "Last", st.bases.dingers() as "homeruns" FROM stats st;
+	
+	output:
+	First      Last                   homeruns
+	---------- -------------------- ----------
+	Johnny     Bench                       389
+	Red        Schoendienst                 84
+	Joe        Morgan                      268
+	Rod        Carew                        92
+	Tony       Lazzeri                     178

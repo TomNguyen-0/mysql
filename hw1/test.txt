@@ -1,0 +1,30 @@
+drop table infobb02 purge;
+drop table deptbb02 purge;
+drop table salsbb02 purge;
+start infobb02
+start deptbb02
+start salsbb02
+
+btitle 'Report Done'
+set headsep !
+set pages 30
+set pause on
+set echo on
+spool current
+
+ttitle 'empbb02-st20 '
+desc empbb02
+select * from empbb02;
+
+ttitle 'infobb02-st20 '
+desc infobb02
+select * from infobb02;
+
+ttitle 'deptbb02-st20 '
+desc deptbb02
+select * from deptbb02;
+
+ttitle 'salsbb02-st20 '
+desc salsbb02
+select * from salsbb02;
+spool off

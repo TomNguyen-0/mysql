@@ -1,0 +1,15 @@
+-- example of a package with a procedure
+
+-- A stored procedure is hard to use from SQL since SQL has no 
+-- variables, and thus no way to capture output parameters.
+-- Thus this proc, which captures statistics by department, will 
+-- be used in a PL/SQL block
+CREATE OR REPLACE PACKAGE sixPackDos02 AS
+PROCEDURE empStatsbb02packed(
+  deptid IN empbb02.deptno%TYPE,
+  avgsal IN OUT NUMBER,
+  totsal IN OUT NUMBER);
+END;
+.
+/
+SHOW ERRORS

@@ -1,0 +1,19 @@
+-- This is an example of a stored function.
+-- The function is compiled and stored when we 
+-- type >SQL start getDnamebb02.fn
+-- after AS can go any number of local variables; printing these
+-- is a skill not so easily discovered, at least by me so far
+CREATE OR REPLACE FUNCTION getDnamebb02b(no IN NUMBER            )
+    RETURN NUMBER AS 
+     avg1 NUMBER;
+     tot NUMBER;
+BEGIN
+  
+-- test of the stored procedure  empStatsbb02.proc
+  empStatsbb02(no,avg1,tot);
+  --DBMS_OUTPUT.PUT_LINE('for dept 20 the average salary is '||avg1||
+    --' and the total salary is '||tot);
+RETURN(avg1);
+END;
+/
+SHOW ERRORS

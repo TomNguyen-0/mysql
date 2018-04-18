@@ -1,0 +1,23 @@
+SET PAGES 100
+SPOOL sixpack02.dat
+SET ECHO ON
+SET PAUSE ON
+CREATE OR REPLACE PACKAGE sixPack02 AS
+
+-- This is an example of a stored function.   An example invocation 
+-- might be SELECT ename,getRestbb02(ename) FROM empbb02;
+-- A function can also be included and invoked from within a PL/SQL
+-- block.    Or it can be stored and called from a PL/SQL block.
+-- An included function has slightly different syntax.
+FUNCTION getRestbb02(name IN empbb02.ename%TYPE)
+    RETURN deptbb02.restaurant%TYPE ;
+-- This is an example of a stored function.   An example invocation 
+-- might be SELECT ename,getRestLocbb02(ename) FROM empbb02;
+-- A function can also be included and invoked from within a PL/SQL
+-- block.    Or it can be stored and called from a PL/SQL block.
+-- An included function has slightly different syntax.
+FUNCTION getRestLocbb02(name IN empbb02.ename%TYPE)
+    RETURN deptbb02.location%TYPE ;
+END sixPack02;
+/
+SHOW ERRORS

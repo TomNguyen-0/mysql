@@ -1,0 +1,15 @@
+-- This is an example of a stored function.   An example invocation 
+-- might be SELECT enamegetRestLocbb(ename) FROM empbb;
+-- A function can also be included and invoked from within a PL/SQL
+-- block.    Or it can be stored and called from a PL/SQL block.
+-- An included function has slightly different syntax.
+CREATE OR REPLACE FUNCTION getRestLocbb02(name IN empbb02.ename%TYPE)
+    RETURN deptbb02.location%TYPE AS gloc deptbb02.location%TYPE;
+BEGIN
+  SELECT location
+  INTO gloc
+  FROM empbb02,deptbb02
+  WHERE empbb02.deptno = deptbb02.deptno AND name = ename;
+  RETURN(gloc);
+END;
+/

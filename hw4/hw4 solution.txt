@@ -1,0 +1,193 @@
+Tom Nguyen - cssc0020 - st20 - REDID 820468110
+Professor Dr. Carl Eckberg
+CS 514 - summer s2 - TTh 1800-2150
+July 31, 2017
+                       Lab 4   CS514    Summer 2017
+
+1. (a) Your team had much loved and talented players named Tinker, Evers, and Chance(you might google Tinker to Evers to Chance, just for fun).   The team has decided to retire their uniform numbers: 9 29 32.   Write code in the form of a check constraint to make sure no new player is assigned these numbers.
+
+	alter table infobb02 add constraint infobb02_uni_ck check ((uni not like '9') and (uni not like '29') and (uni not like '32')) enable novalidate;
+	
+(b) check that your condition is working, and show the error message that results from a constraint violation.
+	
+	insert into infobb02 values ('no', 'tom', 'nguyen', '9', 110,123,null);
+	ERROR at line 1:
+	ORA-02290: check constraint (ST20.INFOBB02_UNI_CK) violated
+	
+	insert into infobb02 values ('no', 'tom', 'nguyen', '29', 110,123,null);
+	ERROR at line 1:
+	ORA-02290: check constraint (ST20.INFOBB02_UNI_CK) violated
+	
+	insert into infobb02 values ('no', 'tom', 'nguyen', '32', 110,123,null);
+	ERROR at line 1:
+	ORA-02290: check constraint (ST20.INFOBB02_UNI_CK) violated
+
+2. Write a java program that will have as input an employee number, and will output the following as appropriate: employee with eid ddd has no batting average employee with eid ddd has an average below the Mendoza line (i.e. below 200) employee with eid ddd has a batting average of nnn (give the correct average) Your java program should of course use jdbc to query the database.
+	
+	  boolean found = false; //no one is found at this moment.
+	  System.out.print("Enter an employee's number:");
+	  empnumber = getData.readLine();
+	  while (rs.next()) {
+        String s1 = rs.getString("EMPNO");
+		String s2 = rs.getString("AVERAGE");
+		if(s1.equals(empnumber)){
+			found=true;
+			if(s2 ==null) //null average
+				System.out.println("employee with eid:"+ s1+" has no batting average");
+			else if(Integer.parseInt(s2)<200) //lower than 200 average
+				System.out.println("employee with eid:"+s1+" has an average below the Mendoza line");
+			else//higher or equal to 200
+				System.out.println("employee with eid:"+s1+" has a batting average of "+s2);
+			break;
+		}
+      }
+	  if(!found)//invalid empno was input
+		  System.out.println("could not find any player eid:" +empnumber);
+      ResultSetMetaData rsmd = rs.getMetaData();
+	  
+	OutPut:
+	[cssc0020@edoras hw4]$ javac hw4.java
+	[cssc0020@edoras hw4]$ java -cp ~eckberg/classes12.zip:. hw4 eckberg carl
+	Enter an employee's number:987
+	could not find any player eid:987
+	
+	Enter an employee's number:777
+	employee with eid:777 has a batting average of 270
+
+	Enter an employee's number:712
+	employee with eid:712 has no batting average
+
+	Enter an employee's number:755
+	employee with eid:755 has an average below the Mendoza line
+
+3. We want to promote harmony by having a doubles tennis tournament for coaches and infielders.  We will make up our mind on teams later after psychological evaluation, but for now output all possible pairs where the first player is a coach and the second an infielder. You can use department numbers in writing the code. Treat rickey as a coach (i.e. use staff and infield as departments) A sample pair would be berra  gehrig  (use enames, not empno's), and there will be 16 rows.
+	
+	select c.coach, i.infield from(select ename as Coach from empbb02 where deptno=40)c cross join (select ename as Infield from empbb02 where deptno=10) i;
+
+	output:
+	COACH         INFIELD
+	------------- -------------
+	rickey        gehrig
+	rickey        minoso
+	rickey        sandberg
+	rickey        cey
+	lasorda       gehrig
+	lasorda       minoso
+	lasorda       sandberg
+	lasorda       cey
+	bochy         gehrig
+	bochy         minoso
+	bochy         sandberg
+	bochy         cey
+	berra         gehrig
+	berra         minoso
+	berra         sandberg
+	berra         cey
+	
+4. Create a stored function whose input is a player last name and whose output is the uniform number of that player. Write a script that calls this function for minoso.
+	
+	Function:
+	Create or replace function UniformNumber(lname in 			empbb02.ename%type)
+		return infobb02.uni%type as uni_number infobb02.uni%type;
+	Begin
+		select uni
+		into uni_number
+		from empbb02,infobb02
+		where empbb02.empno = infobb02.empno and lname = ename;
+		return(uni_number);
+	end;
+	/
+	
+	Script:
+	start UniformNumber.fn
+	column "Minoso's uniform number" format a23;
+	select UniformNumber(ename) as "Minoso's uniform number" from empbb02 where ename='minoso';
+	
+	output:
+	Minoso's uniform number
+	-----------------------
+	27	
+
+5.  Write a stored procedure whose input is a player last name and  whose outputs are era and average.  Test it.  For null values, output NA (first choice) or 0 (second choice).  Your tests should make sure all the desired functionality is covered. The output here should be self-documenting, e.g. minoso has an era of 32 and an average of 270   
+	
+	Procedure:
+	create or replace procedure infostats(
+		last_name in empbb02.ename%type,
+		avg_number out number,
+		era_number out number) as
+	begin
+		select infobb02.average, infobb02.era
+		into avg_number,era_number
+		from infobb02,empbb02
+		where empbb02.empno = infobb02.empno and last_name = 	empbb02.ename;
+	end;
+	.
+	/
+	show errors
+	
+	Script:
+	variable avg1 number	
+	variable era1 number	
+	execute infostats('minoso',:avg1,:era1);			
+	/
+	print avg1
+	print era1
+	
+	output: (from anonymous block on step 6)
+	minoso has an era of 32 and an average of 270
+	lasorda has an era of 0 and an average of 0
+	paige has an era of 3.29 and an average of 0
+	bochy has an era of 0 and an average of 220
+	
+
+6. Arrange to invoke the procedure you stored in 7. above from an anonymous block.
+	
+	anonymous block for testing:
+	set serveroutput on
+	accept lastname prompt 'Enter Last Name> '
+	declare 
+		avg1 number;
+		era1 number;
+		lastname varchar2(13) :='&lastname';
+	begin
+		infostats(lastname,avg1,era1);
+		dbms_output.put_line(lastname||' has an era of ' || nvl(era1,0) || ' and an 
+	average of ' || nvl(avg1,0));
+	end;
+	.
+	/
+	
+	Output:
+	Enter Last Name> minoso
+	old   4:        lastname varchar2(13) :='&lastname';
+	new   4:        lastname varchar2(13) :='minoso';
+	minoso has an era of 32 and an average of 270
+
+7.  An old movie version of Lord of the Rings has the line: Where there's a whip, there's a way.  Some incentives are less pleasant than others.  But in baseball, whip is a statistic about pitchers.  Add a column, retroactviely, to infobb02, with columnn name   whip.  For each player with an era, add what you think is an appropriate value for whip (google can tell you about whip).  Set all other values of whip to null.
+		  
+	savepoint bookmark2;
+	alter table infobb02 add whip number (6,4);
+	update infobb02 set whip=null where era is null;
+	update infobb02 set whip=era/average+1 where era is not null;
+	column whip format a6
+	select empno,fname,uni,average,era,nvl(to_char(whip),'null') as whip from infobb02;
+
+	output:
+	EMPNO FNAME      UNI     AVERAGE    ERA WHIP
+	----- ---------- ---- ---------- ------ ------
+	712   branch     56                     null
+	735   tommy      62                     null
+	707   bruce      64          220        null
+	777   orestes    27          270  32.00 1.1185
+	763   lou        14          350        null
+	782   stan       19          342        null
+	798   larry      66          290        null
+	788   ron        35          287        null
+	730   willie     24          325        null
+	755   randy      8           123   2.15 1.0175
+	744   mordecai   25          168   3.27 1.0195
+	721   ryne       17          294        null
+	799   van lingle 31          220   2.82 1.0128
+	720   ted        10          350        null
+	766   ivan       4           339        null
+	700   Leroy      29                3.29 null	

@@ -1,0 +1,10 @@
+Create or replace function UniformNumber(lname in empbb02.ename%type)
+	return infobb02.uni%type as uni_number infobb02.uni%type;
+Begin
+	select uni
+	into uni_number
+	from empbb02,infobb02
+	where empbb02.empno = infobb02.empno and lname = ename;
+	return(uni_number);
+end;
+/

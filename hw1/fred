@@ -1,0 +1,30 @@
+From eckberg@edoras.sdsu.edu Thu Jul  6 23:08:10 2017
+Return-Path: <eckberg@edoras.sdsu.edu>
+X-Original-To: cssc0020
+Delivered-To: cssc0020@edoras.sdsu.edu
+Received: by edoras.sdsu.edu (Postfix, from userid 1015)
+	id 483366000048; Thu,  6 Jul 2017 23:08:10 -0700 (PDT)
+Date: Thu, 06 Jul 2017 23:08:10 -0700
+To: eckberg@edoras.sdsu.edu
+Subject: fred.sql
+User-Agent: Heirloom mailx 12.5 7/5/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-Id: <20170707060810.483366000048@edoras.sdsu.edu>
+From: eckberg@edoras.sdsu.edu
+Status: RO
+
+  btitle 'Report Done'
+  set headsep !
+  ttitle 'First example ! CS 514'
+  spool fred
+  set echo on  -- ignore me
+  set pause on
+  set pages 30 
+-- this is a comment
+  select * from empbb02;
+  select * from salsbb02;
+  --set echo off
+  spool off
+

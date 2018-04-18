@@ -1,0 +1,16 @@
+create table empbb02 (EMPNO VARCHAR2(5), ENAME VARCHAR2(10) NOT NULL, POS VARCHAR2(12),BOSS VARChAR2(4), HIREDATE DATE, SAL NUMBER(6),DEPTNO NUMBER(2), INCENTIVES NUMBER(6));
+insert into empbb02 values('712'	,'rickey',	'gm',	null	,'01-JAN-1998',	10000,	40,	null);
+insert into empbb02 values('735'	,'lasorda',	'coach',	'712',	'10-JAN-1998',	2000,	40,	null);
+insert into empbb02 values('707'	,'bochy',	'coach',	'712',	'11-JAN-1998',	2000,	40,	null);
+insert into empbb02 values('798'	,'berra',	'coach',	'712',	'12-JAN-1998',	2000,	40,	null);
+insert into empbb02 values('782'	,'musial',	'right field',	'707',	'01-FEB-1998',	42000,	20,	null);
+insert into empbb02 values('763'	,'gehrig',	'first base',	'735',	'11-MAR-1998',	85000,	10,	null);
+insert into empbb02 values('777'	,'minoso',	'shortstop',	'735',	'05-MAY-1998',	85000,	10,	6000);
+insert into empbb02 values('721'	,'sandberg',	'second base',	'735',	'28-FEB-1998',	25000,	10,	null);
+insert into empbb02 values('788'	,'cey',	'third base',	'735',	'10-JAN-1999',	15000,	10,	8000);
+insert into empbb02 values('720'	,'williams',	'left field',	'707',	'05-JAN-1999',	150000,	20,	null);
+insert into empbb02 values('755'	,'johnson',	'pitcher',	'798',	'08-NOV-1998',	50000,	30,	null);
+insert into empbb02 values('744'	,'brown',	'pitcher',	'798',	'18-OCT-1999',	40000,	30,	4000);
+insert into empbb02 values('730'	,'mays',	'center field',	'707',	'01-JAN-1998',	240000,	20,	null);
+insert into empbb02 values('799'	,'mungo',	'pitcher',	'798',	'10-MAR-2000',	20000,	30,	12000);
+insert into empbb02 values('766'	,'rodriguez',	'catcher',	'735',	'16-OCT-2001',	100000,	50,	null);

@@ -1,0 +1,32 @@
+Tom Nguyen - cssc0020 - st20 - REDID 820468110
+Professor Dr. Carl Eckberg
+CS 514 - summer s2 - TTh 1800-2150
+July 25, 2017
+
+                 Lab 3   Baby, The Rain Must Fall  Summer '17
+
+
+    This is mostly about conversion from csv files to a databse table, and the reverse thereof. You are supposed to have acquired San Diego monthly and seasonal rainfall numbers, starting in 1850, as a csv file.  
+    1.  make a rainfall table to do this in Oracle you want to use the sqlldr utility there are 3 phases to this part: first phase: create a rainfall table, using CREATE TABLE, with 20 fields.   The first field is year, and the type can just be NUMBER(4).  The next 19 fields are: jan,feb,...,dec,tot,next1,....next6,seas where each month is the standard 3 letter abbreviation.  We will assume we will never have a 100 inch rainfall season, so the type for each can be NUMBER(4,2). second phase:  create requisite code to convert the csv file to a table;  you will need a control file, e.g. named rainfall.ctl third phase:  fill the table using the control file and the sqlldr utility.  This will require a line something like sqlldr  st66/cs514@cs514  control=rainfall.ctl NOTE: you run sqlldr from the o.s., just like sqlplus
+
+	create table rainfall (year number(4),jan number(4,2), feb number(4,2), mar number(4,2), apr number(4,2), may number(4,2), jun number(4,2), jul number(4,2), aug number(4,2), sep number(4,2), oct number(4,2), nov number(4,2), dec number(4,2), tot number(4,2), next1 number(4,2), next2 number(4,2), next3 number(4,2), next4 number(4,2), next5 number(4,2), next6 number(4,2), seas number(4,2));
+	
+	spool rainfall.csv
+    SELECT year||','||jan||','|| feb||','||mar||','||apr||','||may||','||jun||','||jul||','||aug||','||sep||','||oct||','||nov||','||dec||','||tot||','||next1||','||next2||','||next3||','||next4||','||next5||','||next6||','||seas from rainfall;
+    spool off
+	
+	sqlldr st20/cs514@cs514 control=rainfall.ctl
+	
+     2.   so for fun, write an SQL statement to find the year of the rainiest July on record.  The output should be decently self-descriptive....
+	 
+	 select year||' with '|| jul as "Rainiest July on record" from rainfall where jul=(select max(jul) from rainfall);
+	
+	 
+     3.  convert the table salsbb02 to a csv file
+	 
+	 spool salsbb02.csv
+	 select grade||','||role||','||losal||','||hisal from salsbb02;
+	 spool off
+
+A long description of how to use sqlldr to copy a table from one schema to another will show up in a separate mail message.
+

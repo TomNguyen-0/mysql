@@ -1,0 +1,26 @@
+column ename heading 'something|somehti'
+set underline =
+
+column column_name format model
+
+column ename format a4
+
+
+select empno from infobb02 order by empno asc;
+select ename from empbb02 where ename like('q%');
+
+
+
+test:
+7) insert into empbb02 values ('1234','quit','33','hello',07-12-2019',1234,123,123);
+
+
+alter table empbb02 drop constraint empbb02_ename_ck ;
+
+alter table empbb02 add constraint empbb02_ename_ck check(ename in (ename (like 'q%')));
+
+alter table empbb02 add constraint empbb02_ename_ck CHECK(ENAME LIKE 'p%') enable novalidate;
+
+ select * from empbb02 natural join infobb02;
+select empno, fname,ename,pos,uni,average,era,hofdate from empbb02 natural join infobb02;
+update

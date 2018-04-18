@@ -1,0 +1,112 @@
+From eckberg@edoras.sdsu.edu Wed Jul 19 12:32:42 2017
+Return-Path: <eckberg@edoras.sdsu.edu>
+X-Original-To: cssc0020
+Delivered-To: cssc0020@edoras.sdsu.edu
+Received: by edoras.sdsu.edu (Postfix, from userid 1015)
+	id 8EFF76000048; Wed, 19 Jul 2017 12:32:42 -0700 (PDT)
+Date: Wed, 19 Jul 2017 12:32:42 -0700
+To: eckberg@edoras.sdsu.edu
+Subject: using sqlldr
+User-Agent: Heirloom mailx 12.5 7/5/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-Id: <20170719193242.8EFF76000048@edoras.sdsu.edu>
+From: eckberg@edoras.sdsu.edu
+
+
+                               SQL*Loader
+
+    SQL*Plus is an interpreter, and SQL*Loader is a utility for reading 
+    data from flat files into an Oracle table.  SQL*Loader is a fairly 
+    flexible utility for transfering data and does not require the TNS
+    handshaking needed for the 'copy' command that can be used inside 
+    SQL*plus.  (As an aside, a different method is to use imp and exp,
+    Oracle utilities for export and import, where export creates a file
+    ending in the tag .dmp).
+
+    To use SQL*loader on either a PC or a UNIX system, the most likely 
+    command name will be sqlldr.   On a PC version of Oracle you can 
+    probably find it at something like \Oracle\Ora92\bin or
+    \oracle\product\10.2.0\db1\BIN, depending on the age of the Oracle.
+
+    We will illustrate the process of moving data for a table from one 
+    Oracle instance to another.   The example will be salsbb02, which we 
+    assume you have populated with values in cfedb.
+
+    The first step is to create a flat file of comma separated values, a 
+    .csv file if you give it the usual suffix.   To do this you simply 
+    do the following     spool salsbb02.csv
+                         SELECT col1||','||col2||   etc
+                         spool off
+    where the column names of salsbb02 are used in the obvious places
+
+    You will then edit away the dross in salsbb02.csv until it looks something 
+    like the following:
+
+
+      1,staff,1000,5000                                                           
+      2,staff,5001,9000                                                           
+      1,hitter,5000,15000                                                          
+      2,hitter,15001,50000                                                         
+      3,hitter,50001,250000                                                        
+      1,pitcher,5000,25000                                                         
+      2,pitcher,25001,125000                                                          
+    This csv file can be used over and over again to migrate to various 
+    instances.
+
+    The sqlldr command requires a control file.   Here is a typical 
+    command:
+        sqlldr eckberg/sesame@mlidb17 control=loadsals.ctl
+    where loadsals.ctl is the following control file:
+  
+    NOTE: the instance mlidb17 is purely fictional, as is the table
+      name sals04 below.   They are just EXAMPLES OF SYNTAX.
+
+    load data
+      infile salsbb02.csv
+      replace into table sals04
+      fields terminated by ','
+      (grade,role,losal,hisal)
+
+    Assuming you have created an appropriate table in mlidb17 named 
+    sals04, everything should work.  There is an alternate form in
+    which data is included in the control file.   There follows an 
+    example of that syntax.
+
+    load data infile *
+      insert into table sals04
+      fields terminated by ','
+      (grade,role,losal,hisal)
+    begindata
+      01,xxx,20,30
+
+    You can practice the technique by copying from one table to another 
+    in the same instance.  But ideally you will have accounts on two 
+    instances so you can practice more realistically.
+
+    NOTE: the trailing null values in infobb02 create an odd technical 
+    problem.  In theory adding the clause   TRAILING NULLCOLS
+    just before the list of columns should fix it, but the cure is not
+    complete.  One must delete the trailing commas in the .csv file, but
+    problems still remain.  A good bet is probably to make sure the last col
+    of the .csv file has, say, zeroes instead of nulls, then put the 
+    nulls back once the table is built.  Better yet, if generating the 
+    .csv file from a table, choose a column with no null values as the 
+    last column written out.  Because of trailing blanks problems in the last 
+    column, the last column will ideally be non-null and numeric; one cure
+    is to add a fake column of zeros and not list it for reading.
+    Another is to add    terminated by WHITESPACE   after the last column
+    name at the end of the control file.
+      It is worth knowing about these problems
+    when dealing with prog. lang. generated data from unknown sources.
+    A line like 1,2,,,,,,,,,
+    with lots of trailing null values  might have lots of grief in it.
+    At some point, a nice jdbc program would be a better bet.  It could 
+    parse the data and generate a correct INSERT INTO line on the fly.
+    But for copying from one table to another, the SQL*Loader is ok.
+
+    NOTE: if you run sqlldr using control file fred.ctl, a file named
+    fred.log will be generated containing verbose feedback about how 
+    things went.
+

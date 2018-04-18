@@ -1,0 +1,21 @@
+drop table infobb02 purge;
+drop table deptbb02 purge;
+drop table salsbb02 purge;
+start infobb02
+start deptbb02
+start salsbb02
+
+set pages 30
+set pause on
+set echo on
+spool current
+
+desc empbb02
+select * from empbb02;
+desc infobb02
+select * from infobb02;
+desc deptbb02
+select * from deptbb02;
+desc salsbb02
+select * from salsbb02;
+spool off

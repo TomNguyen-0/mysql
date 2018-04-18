@@ -1,0 +1,73 @@
+Tom Nguyen - cssc0020 - st20 - REDID 820468110
+Professor Dr. Carl Eckberg
+CS 514 - summer s2 - TTh 1800-2150
+July 18, 2017
+
+                         CS 514    Lab 2    Summer 2017
+
+--1.  Make empno the primary key for both empbb02, and infobb02,and make deptno the primary key for deptbb02. Use the constraint naming convention given in class, both here and in all such problems below.
+
+alter table empbb02 add constraint empbb02_empno_pk primary key (empno);
+alter table infobb02 add constraint infobb02_empno_pk primary key (empno);
+alter table deptbb02 add constraint deptbb02_deptno_pk primary key(deptno);
+
+--2.  Display ename and hiredate in the following way.  The date should be displayed numerically according to the international dat format (ISO 8601).  Google that.  More details on controlling date format will be given th.  Hint:  to_char(sysdate,'dd-mon-yy') can be tried from dual, if you want a head start Use the column alias Intl Date, and also Last Name
+
+select ename as "Last Name", to_char(hiredate,'yyyy-mm-dd+hh24:mi:ss') as "Intl Date" from empbb02;
+
+-- 3.  Make a suitable multi-column primary key for salsbb02.
+
+alter table salsbb02 add constraint salsbb02_grade_role_pk primary key(grade,role);
+
+--4.  Make uni a unique key (unique constraint) in infobb02, mostly to confirm that you CAN.
+
+alter table infobb02 add constraint infobb02_uni_uk unique(uni);
+
+--5.  When your display all of deptbb02, the motto 'wraps', and appears on a second line.  Play with the COLUMN pseudo-op until you can 'fix' this.   E.g. column dname format a10 limits the print width of dname to 10 bytes.  It is temporary, of course.  You can Google this pseudo-op as needed.
+
+column motto format a24;
+select * from deptbb02;
+
+--6.  Make empno a foreign key in infobb02 (parent table is empbb02); also make deptno a foreign key in empbb02 (parent table is deptbb02)
+
+alter table infobb02 add constraint infobb02_empno_fk foreign key(empno) references empbb02(empno);
+alter table empbb02 add constraint empbb02_deptno_fk foreign key(deptno) references deptbb02(deptno);
+
+--7.  The boss dated a lady named Suzie Q, gave her a third of the franchise, and she ditched him for a race car driver.   He will now not hire a player whose last name starts with 'q'.  Make this a 'check' constraint.  Hint: google the keyword 'like' for Oracle Details on like and similar conditions will be given th.
+
+alter table empbb02 add constraint empbb02_ename_ck CHECK((ENAME NOT LIKE 'q%') and (ename not like 'Q%')) enable novalidate;
+
+--8.  Test your check constraint in 7. by trying to 'hire' the player, Dan Quisenberry.  NOTE: you will need to also widen the field width of ename, just to make hiring this guy possible. To do that use  ALTER TABLE empbb02 MODIFY ename VARCHAR2(16), or some other adequate width.
+
+alter table empbb02 modify ename varchar2(16);
+insert into empbb02 values('745','Quisenberry','fake','735','01-JAN-2016',2000,50,null);
+
+--9. In the terminology of foreign keys, you should not be allowed to drop a parent table, if it still has children. The parenting obligation is eternal... Verify this using your tables. BE CAREFUL not to lose a table you do not have backup for.   :)
+
+drop table empbb02;
+   
+--10. Add Satchel Paige to the roster.  Get his first name and position by Google.  Uniform number might be a challenge, but probably not. Read his advice on how to stay young.  For fun.
+
+alter table empbb02 modify ename varchar2(13);
+insert into empbb02 values ('700','paige','pitcher','798','09-JUL-1948',9000,30,null);
+insert into infobb02 values('700','Leroy','Satchel','29',null,3.29);
+
+--11. Most of our team is in the Hall of Fame at Cooperstown.  Add a column to infobb02 with the date of their hall of fame inductioas and use Google to fill it in.  Name the column hofdate.  The command you need is ALTER TABLE infobb02 ADD... followed by column descriptor.
+
+alter table infobb02 add hofdate date;
+update infobb02 set hofdate='09-FEB-1971' where empno='700';
+update infobb02 set hofdate=null where empno='707';
+update infobb02 set hofdate='01-JAN-1967' where empno='712';
+update infobb02 set hofdate='01-JAN-1966' where empno='720';
+update infobb02 set hofdate='01-JAN-2005' where empno='721';
+update infobb02 set hofdate='01-JAN-1979' where empno='730';
+update infobb02 set hofdate='01-JAN-1997' where empno='735';
+update infobb02 set hofdate='01-JAN-1949' where empno='744';
+update infobb02 set hofdate='01-JAN-2015' where empno='755';
+update infobb02 set hofdate='01-JAN-1939' where empno='763';
+update infobb02 set hofdate='01-JAN-2017' where empno='766';
+update infobb02 set hofdate=null where empno='777';
+update infobb02 set hofdate='01-JAN-1969' where empno='782';
+update infobb02 set hofdate=null where empno='788';
+update infobb02 set hofdate='01-JAN-1972' where empno='798';
+update infobb02 set hofdate='17-MAY-1974' where empno='799';

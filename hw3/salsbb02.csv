@@ -1,0 +1,15 @@
+SQL> select grade||','||role||','||losal||','||hisal from salsbb02;
+
+GRADE||','||ROLE||','||LOSAL||','||HISAL                                        
+--------------------------------------------------------------------------------
+1,staff,1000,5000                                                               
+2,staff,5001,10000                                                              
+1,hitter,5000,15000                                                             
+2,hitter,15001,50000                                                            
+3,hitter,50001,250000                                                           
+1,pitcher,5000,25000                                                            
+2,pitcher,25001,125000                                                          
+
+7 rows selected.
+
+SQL> spool off
